@@ -1,0 +1,120 @@
+---
+title: "Distributions"
+author: "Arif_Furkan"
+date: "2024-06-29"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Functions for distributions
+### In this project, we see how statistical distributions are implemented in R and finally we apply the central limit theorem.
+
+# Uniform Distribution
+
+```{r}
+x<-dunif(0.5, min = 0, max = 1)
+dunif(x, min = 0, max = 1, log = FALSE)
+q<-punif(0.5, min = 0, max = 1)
+punif(q, min = 0, max = 1, lower.tail = TRUE, log.p = FALSE)
+p<-qunif(0.5, min = 0, max = 1)
+qunif(p, min = 0, max = 1, lower.tail = TRUE, log.p = FALSE)
+n<-runif(10, min = 0, max = 1)
+runif(n, min = 0, max = 1)
+```
+
+# Binomial Distribution
+
+These probability and size values were chosen randomly.
+
+```{r}
+size<-5
+prob<-0.5
+dbinom(x, size, prob, log = FALSE)
+pbinom(q, size, prob, lower.tail = TRUE, log.p = FALSE)
+qbinom(p, size, prob, lower.tail = TRUE, log.p = FALSE)
+rbinom(n, size, prob)
+```
+# Normal Distribution
+
+This mean value was chosen randomly.
+
+```{r}
+mean<-0
+dnorm(x, mean = 0, sd = 1, log = FALSE)
+pnorm(q, mean = 0, sd = 1, lower.tail = TRUE, log.p = FALSE)
+qnorm(p, mean = 0, sd = 1, lower.tail = TRUE, log.p = FALSE)
+rnorm(n, mean = 0, sd = 1)
+```
+# Hypergeometric Distribution
+
+These m, k and e values were chosen randomly.
+
+```{r}
+m<-10
+k<-7
+e<-5
+dhyper(x, m, e, k, log = FALSE)
+phyper(q, m, e, k, lower.tail = TRUE, log.p = FALSE)
+qhyper(p, m, e, k, lower.tail = TRUE, log.p = FALSE)
+rhyper(n, m, e, k)
+```
+# Poisson Distribution
+
+This lambda value was chosen randomly.
+
+```{r}
+lambda<-2
+dpois(x, lambda, log = FALSE)
+ppois(q, lambda, lower.tail = TRUE, log.p = FALSE)
+qpois(p, lambda, lower.tail = TRUE, log.p = FALSE)
+rpois(n, lambda)
+```
+# Geometric Distribution
+
+```{r}
+dgeom(x, prob, log = FALSE)
+pgeom(q, prob, lower.tail = TRUE, log.p = FALSE)
+qgeom(p, prob, lower.tail = TRUE, log.p = FALSE)
+rgeom(n, prob)
+```
+# Central Limit Theorem
+## Load necessary packages
+
+```{r}
+require(ggplot2)
+```
+## Create a population from a Poisson distribution
+```{r}
+lambda <- 5  # Parameter for Poisson distribution (mean)
+population <- rpois(10000, lambda)  # Population data
+```
+## Sample size and number of simulations
+```{r}
+n <- 30  # Sample size
+num_simulations <- 1000  # Number of simulations
+```
+## Calculate the sample means
+```{r}
+sample_means <- replicate(num_simulations, {
+sample <- sample(population, n, replace = TRUE)
+mean(sample)})
+```
+## Save the sample means as a data frame
+```{r}
+sample_means_df <- data.frame(sample_means)
+```
+## Plot the histogram of sample means
+```{r}
+ggplot(sample_means_df, aes(x = sample_means)) +
+geom_histogram(aes(y = ..density..), bins = 30, fill = "blue", color = "black", alpha = 0.7) +
+stat_function(fun = dnorm, args = list(mean = mean(sample_means), sd = sd(sample_means)), color = "red", size = 1) +
+labs(title = "Central Limit Theorem Example",
+x = "Sample Means",
+y = "Density") +
+theme_minimal()
+```
+
+### This example demonstrates the Central Limit Theorem, showing how the distribution of sample means approaches a normal distribution as the sample size increases.
