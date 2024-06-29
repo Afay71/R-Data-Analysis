@@ -1,0 +1,85 @@
+---
+title: "Descriptive_Data_Analysis_with_mtcars"
+author: "Arif_Furkan"
+date: "2024-06-29"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+Before you start; “Zorunlu Paket Yükleniyor” means Installing required package
+
+# Data Loading and Preprocessing
+
+```{r}
+require(dplyr)
+require(ggplot2)
+require(GGally)
+data(mtcars)
+```
+
+# Data Visualization
+
+```{r}
+mtcars %>%
+select(mpg, disp, cyl, hp) %>%
+ggpairs(.)
+```
+
+# Installing and Using Other Packages
+
+```{r}
+require(gcookbook)
+require(corrplot)
+mcor <- cor(mtcars)
+corrplot(mcor)
+```
+
+# Other Analytics and Visualizations
+## Graphs are created with the qgraph package.
+## Multivariate analyzes are performed with the MVA package.
+
+```{r}
+require(qgraph)
+require(corrplot)
+qgraph(mcor,layout = "spring")
+require(MVA)
+install.packages("MVA")
+with(mtcars, chiplot(mpg,hp))
+stem(mtcars$hp)
+```
+
+## Operations are performed on outliers with the OutliersO3 package.
+
+```{r}
+require(OutliersO3)
+data("stackloss")
+outdata <- O3prep(stackloss,method =c("HDo", "BAC", "DDC"), tols=0.05)
+outmulti <- O3plotM(outdata)
+outmulti$nOut
+outmulti$gO3
+```
+
+## Crosstabs are created with the gmodels package.
+
+```{r}
+require(gmodels)
+CrossTable(mtcars$vs,mtcars$gear,prop.t=TRUE, prop.r=TRUE, prop.c=TRUE,
+expected=FALSE,chisq=FALSE, format="SPSS")
+```
+
+## Data analysis and summarization processes are performed with packages such as DescTools and dataMaid.
+
+```{r}
+require(readr)
+require(DescTools)
+Desc(mtcars$mpg, plotit = TRUE, main= "MPG Data")
+Desc(as.factor(mtcars$gear), plotit=FALSE, main ="Gear Variable")
+Desc(as.factor(gear)~mpg, data = mtcars, plotit = FALSE,
+main = "Gear ve Mpg Data")
+```
+```{r}
+require(dataMaid)
+dataMaid::summarize(mtcars["mpg"], reportstyleOutput = TRUE)
+```
