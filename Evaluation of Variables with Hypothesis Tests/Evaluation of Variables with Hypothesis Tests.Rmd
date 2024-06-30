@@ -1,0 +1,100 @@
+---
+title: "Evaluation of Variables with Hypothesis Tests"
+author: "Arif_Furkan"
+date: "2024-06-30"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Before you start; "Zorunlu Paket Yükleniyor" means Installing required package
+
+# Motor Cars (mtcars) Dataset Analysis
+
+```{r}
+data(mtcars)
+summary(mtcars$mpg)
+t.test(mtcars$mpg, mu = 25, altenative = "two.sided")
+```
+
+## Attention should be paid to the assumption of whether the variances are equal (var.equal)
+
+# Diamond Prices Example
+
+```{r}
+require(knitr)
+require(dplyr)
+require(ggplot2)
+data(diamonds)
+force(diamonds)
+head(diamonds,3)
+fair <- diamonds %>%
+filter(cut == "Fair") %>%
+select(price)
+premium <- diamonds %>%
+filter(cut == "Premium") %>%
+select(price)
+t.test(fair$price, premium$price, var.equal = FALSE)
+```
+
+## As seen in the results, the p-value is 0.019 and "Fair" and "premium" at a 5% significance level. The null hypothesis that the average prices of diamonds with different cuts are equal is rejected.
+
+# Wilcoxon Test
+
+```{r}
+require(UsingR)
+data(exec.pay)
+summary(exec.pay)
+wilcox.test(exec.pay, conf.int = TRUE)
+```
+
+## As seen from the test results, the 95% confidence interval is between 25-32 thousand dollars.
+
+# Prop Test
+
+```{r}
+prop.test(x = c(40,320), n = c(220,775), alternative = "two.sided")
+```
+
+## It tests whether the rates between two groups are equal. x is the number of successes, n is the total sample size.
+
+
+# Participation in Education (Quine) Example
+
+```{r}
+library(MASS)
+data(quine)
+head(quine)
+attach(quine)
+tab <- table(Eth,Sex)
+prop.test(tab, alternative = "two.sided", conf.level = 0.95,
+correct = FALSE)
+```
+## When we look at the results in question, the null hypothesis is rejected because the p-value is very high, such as 0.94.
+
+# Seat Belt Example
+
+```{r}
+crash <- matrix(c(178,144,135,47), ncol=2)
+colnames(crash) <- c('Alive','Death')
+rownames(crash) <- c('Without_Belt','Belted')
+prop.table(crash)
+prop.test(crash)
+```
+
+## With these results, the null hypothesis that the death rates of seat belt users and non-users are not different is rejected.
+
+# Chi-Square Test (Relationship between Hepatitis and Tattoos)
+
+## Let's say the results obtained in a study on the relationship between hepatitis disease and the place where tattoos are made (licensed, unlicensed and not tattooed) are as follows:
+
+```{r}
+hep <- matrix(c(17,35,8,53,22,491), ncol = 2)
+colnames(hep) <- c('Positive','Negative')
+rownames(hep) <- c('Licensed','Unlicensed','Not_Tattooed')
+prop.table(hep)
+chisq.test(hep)
+```
+## According to the test results obtained, the null hypothesis that there is no relationship between tattooing and hepatitis disease is rejected at the 5% significance level.
