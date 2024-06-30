@@ -1,0 +1,87 @@
+---
+title: "ANOVA_Example"
+author: "Arif_Furkan"
+date: "2024-06-30"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Loading Libraries and Data
+
+```{r}
+require(ggplot2)
+data(diamonds)
+```
+
+# Creating a Boxplot
+
+```{r, fig.width=7, fig.height=4}
+ggplot(data = diamonds) + geom_boxplot(aes(cut,price))+
+theme_bw() + xlab("Cut") + ylab("Price") 
+```
+
+# One-Way ANOVA
+
+```{r}
+anova.1 <- aov(price~cut, data = diamonds)
+summary(anova.1)
+print(anova.1)
+```
+
+# Fitting a Linear Model
+
+```{r}
+fit <- lm(price~cut, data = diamonds)
+anova.2 <- anova(fit)
+anova.2
+```
+
+# Another ANOVA using the car package
+
+```{r}
+require(car)
+fit <- lm(price ~ cut, data = diamonds)
+anova.3 <- Anova(fit)
+require(car)
+anova.3 <- Anova(fit)
+anova.3
+```
+
+# Pairwise T-Tests
+
+### Performs pairwise t-tests to compare the means of diamond prices between different cuts.
+
+```{r}
+pairwise.t.test(diamonds$price, diamonds$cut, p.adjust.method = "bonferroni")
+```
+
+### From the results, it can be seen that the Fair-Premium and Good-Very Good groups are not statistically different from each other, but there is a statistically significant difference in the others.
+
+# Tukey's Honest Significant Difference Test
+
+```{r}
+TukeyHSD(anova.1, ordered = FALSE)
+```
+
+### As can be seen, consistent with the above result, there is no statistically significant difference between Fai -Premium and Good-Very Good, but there is a difference between the other groups.
+
+# Two-Way ANOVA
+
+```{r}
+fit.2 <- lm(price ~ cut*color, data = diamonds)
+library(car)
+anova.4 <- Anova(fit.2, type = "III")
+anova.4
+```
+
+# Interaction Plot
+
+```{r}
+with(diamonds,{
+interaction.plot(cut, color, price, col = c(1:4))})
+```
+
+### While the price change is the same in most colors, there is no price decrease in the good cuts in Colors I and G. Apart from this, the price change generally occurs in the same way.
