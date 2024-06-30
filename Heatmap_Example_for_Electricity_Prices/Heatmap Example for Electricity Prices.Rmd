@@ -1,0 +1,62 @@
+---
+title: "Heatmap Example for Electricity Prices"
+author: "Arif_Furkan"
+date: "2024-06-30"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Loading Port Data
+
+```{r}
+library(readr)
+smf <- read_delim("https://raw.githubusercontent.com/RiUA/riua/master/smf.csv",
+";", escape_double = FALSE, col_types = cols(Saat = col_number(),
+Tarih = col_date(format = "%d/%m/%Y")),
+trim_ws = TRUE)
+```
+
+# Preparing Data and First Graphic Elements
+
+```{r}
+require(dplyr)
+require(ggplot2)
+smf.m <- smf %>%
+group_by(.,Tarih) %>%
+summarise(smfm = mean(SMF))
+ggplot(smf.m) + geom_line(aes(x = Tarih, y = smfm),colour = "red") +
+xlab("Date") + ylab("TL/MWh") + theme_bw()
+```
+
+## As can be seen from the chart, prices reached their highest level at the end of 2016.
+
+# Editing Day, Week and Month Values
+
+```{r}
+smf.m$Day <- factor(weekdays(smf.m$Tarih, T))
+smf.m$day <- as.numeric(format(smf.m$Tarih, "%u"))
+smf.m$Week <- as.numeric(format(smf.m$Tarih, "%W"))
+smf.m$Month <- as.numeric(format(smf.m$Tarih, "%m"))
+smf.m$Year <- as.numeric(format(smf.m$Tarih, "%Y"))
+```
+
+# Creating the Chart
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(viridis)
+library(ggthemes)
+ggplot(smf.m, aes(x = Week, y = reorder(Day,-day), fill = smfm)) +
+scale_fill_viridis(name="SMF",option = "D", limits = c(0, max(smf.m$smfm)))+
+geom_tile(color = "white", size = 0.4) + facet_wrap("Year", ncol = 1) +
+scale_x_continuous(expand = c(0, 0), breaks = seq(1, 52, length = 12),
+labels = c("Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug",
+"Sep", "Oct", "Nov", "Dec"))+
+ylab("Day") + theme_tufte()
+```
+
+## From this Chart, we can say that prices were more stable in 2015, but prices started to rise towards the end of 2016.
